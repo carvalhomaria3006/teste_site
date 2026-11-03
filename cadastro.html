@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<!-- saved from url=(0069)file:///C:/Users/Aluno/Desktop/site%20aula%20andr%C3%A9/cadastro.html -->
+<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Cadastro - Meu Sistema </title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #7e005e;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffc0fa;
+            margin-top: 25px;
+        }
+
+        .cadastro {
+            background: #ffe4f8;
+            width: 320px;
+            max-width: 100%;
+            box-sizing: border-box;
+            margin: 25px auto;
+            padding: 25px;
+            border: 1px solid #cf4a4a;
+            border-radius: 10px;
+        }
+
+        .descricao {
+            text-align: center;
+            color: #351c2a;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            margin-bottom: 17px;
+            border: 1px solid #a533b4;
+            border-radius: 5px;
+        }
+
+        input:focus {
+            outline: 2px solid #69ffe6;
+        }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            background: #69ffe6;
+            color: rgb(255, 139, 239);
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ff009d;
+        }
+
+        .rodape {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #ff8cd9;
+        }
+
+        a {
+            color: #0bffeb;
+            text-decoration: none;
+        }
+
+        #mensagem {
+            margin-top: 15px;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Criar conta</h1>
+
+    <main class="cadastro">
+        <p class="descricao"> Preencha os dados para se cadastrar. </p>
+
+        <form id="formCadastro">
+            <label for="nome"> Nome completo: </label>
+            <input type="text" id="nome" minlength="3" placeholder="Digite seu nome" required="">
+
+            <label for="email"> E-mail: </label>
+            <input type="email" id="email" placeholder="Digite seu e-mail" required="">
+
+            <label for="idade"> Idade: </label>
+            <input type="number" id="idade" min="0" max="100" placeholder="Digite sua idade" required="">
+
+            <label for="senha"> Senha:</label>
+            <input type="password" id="senha" minlength="8" placeholder="Mínimo de 8 caracteres" autocomplete="new-password" required="">
+
+            <label for="confirmarSenha">Confirmar senha:</label>
+            <input type="password" id="confirmarSenha" minlength="8" placeholder="Digite a senha novamente" autocomplete="new-password" required="">
+
+            <button type="submit">Cadastrar</button>
+            <div id="mensagem" role="status"></div>
+        </form>
+
+        <div class="rodape">
+            Já tem uma conta?
+            <a href="file:///C:/Users/Aluno/Desktop/site%20aula%20andr%C3%A9/index.html">Fazer login</a>
+        </div>
+    </main>
+
+   
+<script>
+    const formulario = document.getElementById("formCadastro");
+    const mensagem = document.getElementById("mensagem");
+    
+    const contaPadrao = {
+        nome: "Administrador",
+        email: "admin@teste.com",
+        senha: "Sistema@123",
+        idade: null
+    };
+    
+    formulario.addEventListener("submit", function(event) {
+        event.preventDefault();
+    
+        const nome = document.getElementById("nome").value.trim();
+        const email = document.getElementById("email")
+            .value.trim().toLowerCase();
+        const idadeCampo = document.getElementById("idade");
+        const idade = Number(idadeCampo.value);
+        const senha = document.getElementById("senha").value;
+        const confirmarSenha =
+            document.getElementById("confirmarSenha").value;
+    
+        if (nome.length < 3) {
+            mostrarMensagem("Digite seu nome completo.", "red");
+            return;
+        }
+    
+        if (
+            idadeCampo.value === "" ||
+            !Number.isInteger(idade) ||
+            idade < 0 ||
+            idade > 100
+        ) {
+            mostrarMensagem("Digite uma idade inteira entre 0 e 100.", "red");
+            return;
+        }
+    
+        if (senha.length < 8) {
+            mostrarMensagem(
+                "A senha deve ter pelo menos 8 caracteres.", "red"
+            );
+            return;
+        }
+    
+        if (senha !== confirmarSenha) {
+            mostrarMensagem("As senhas não coincidem.", "red");
+            return;
+        }
+    
+        if (email === contaPadrao.email) {
+            mostrarMensagem(
+                "Esse e-mail é reservado para a conta de administrador.",
+                "red"
+            );
+            return;
+        }
+    
+        let usuarios;
+    
+        try {
+            const dadosSalvos = localStorage.getItem("usuarios");
+            usuarios = dadosSalvos ? JSON.parse(dadosSalvos) : [];
+    
+            if (!Array.isArray(usuarios)) {
+                throw new Error("Lista de usuários inválida.");
+            }
+    
+            // Migra um cadastro salvo pela versão antiga.
+            const usuarioAntigo = localStorage.getItem("usuario");
+    
+            if (usuarioAntigo) {
+                const antigo = JSON.parse(usuarioAntigo);
+    
+                if (
+                    antigo.email &&
+                    !usuarios.some(
+                        u => u.email &&
+                        u.email.toLowerCase() ===
+                        antigo.email.toLowerCase()
+                    )
+                ) {
+                    usuarios.push(antigo);
+                }
+            }
+        } catch (erro) {
+            mostrarMensagem(
+                "Erro ao ler os cadastros salvos.", "red"
+            );
+            return;
+        }
+    
+        const emailExiste = usuarios.some(
+            usuario =>
+                usuario.email &&
+                usuario.email.trim().toLowerCase() === email
+        );
+    
+        if (emailExiste) {
+            mostrarMensagem(
+                "Este e-mail já está cadastrado. Use outro e-mail.",
+                "red"
+            );
+            return;
+        }
+    
+        const usuario = {
+            nome: nome,
+            email: email,
+            idade: idade,
+            senha: senha
+        };
+    
+        try {
+            usuarios.push(usuario);
+    
+            localStorage.setItem(
+                "usuarios",
+                JSON.stringify(usuarios)
+            );
+    
+            mostrarMensagem(
+                "Cadastro realizado! Você já pode fazer login.",
+                "green"
+            );
+    
+            formulario.reset();
+    
+            setTimeout(function() {
+                window.location.href = "index.html";
+            }, 1500);
+        } catch (erro) {
+            mostrarMensagem(
+                "Não foi possível salvar o cadastro.", "red"
+            );
+        }
+    });
+    
+    function mostrarMensagem(texto, cor) {
+        mensagem.style.color = cor;
+        mensagem.textContent = texto;
+    }
+    </script>
+
+</body></html>

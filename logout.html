@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout - Meu Sistema</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #7e005e;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffc0fa;
+            margin-top: 60px;
+        }
+
+        .logout {
+            background: #ffe4f8;
+            width: 320px;
+            max-width: 100%;
+            box-sizing: border-box;
+            margin: 25px auto;
+            padding: 25px;
+            border: 1px solid #cf4a4a;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .descricao {
+            color: #351c2a;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            margin-bottom: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn-sair {
+            background: #ff009d;
+            color: white;
+        }
+
+        .btn-sair:hover {
+            background: #c9007b;
+        }
+
+        .btn-voltar {
+            background: #69ffe6;
+            color: #351c2a;
+        }
+
+        .btn-voltar:hover {
+            background: #35d9c0;
+        }
+
+        #mensagem {
+            margin-top: 15px;
+            color: #351c2a;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Encerrar sessão</h1>
+
+    <main class="logout">
+        <p class="descricao">
+            Tem certeza de que deseja sair do sistema?
+        </p>
+
+        <button class="btn-sair" id="btnSair">
+            Sim, quero sair
+        </button>
+
+        <button class="btn-voltar" id="btnVoltar">
+            Não, voltar ao login
+        </button>
+
+        <div id="mensagem" role="status"></div>
+    </main>
+
+   
+<script>
+    const btnSair = document.getElementById("btnSair");
+    const btnVoltar = document.getElementById("btnVoltar");
+    const mensagem = document.getElementById("mensagem");
+    
+    btnSair.addEventListener("click", function() {
+        localStorage.removeItem("sessaoUsuario");
+    
+        mensagem.textContent = "Você saiu do sistema!";
+        btnSair.disabled = true;
+        btnVoltar.disabled = true;
+    
+        setTimeout(function() {
+            window.location.replace("index.html");
+        }, 1000);
+    });
+    
+    btnVoltar.addEventListener("click", function() {
+        window.location.replace("index.html");
+    });
+    </script>
+</body>
+</html>

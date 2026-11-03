@@ -1,0 +1,736 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento - Meu Sistema</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #ffa9e2;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #e26cd8;
+            margin-top: 30px;
+        }
+
+        .pagamento {
+            background: rgb(255, 193, 252);
+            width: 400px;
+            max-width: 100%;
+            box-sizing: border-box;
+            margin: 25px auto;
+            padding: 25px;
+            border: 1px solid #cbd3df;
+            border-radius: 10px;
+        }
+
+        .descricao {
+            text-align: center;
+            color: #ff60dd;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #351c2a;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            margin-bottom: 17px;
+            border: 1px solid #a533b4;
+            border-radius: 5px;
+            background: white;
+        }
+
+        input:focus, select:focus {
+            outline: 2px solid #56e6ff;
+        }
+
+        .opcoes {
+            margin-bottom: 20px;
+        }
+
+        .opcoes label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        .opcoes input {
+            width: auto;
+            margin: 0;
+        }
+
+        .tipo-cartao {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .tipo-cartao label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tipo-cartao input {
+            width: auto;
+            margin: 0;
+        }
+
+        .linha {
+            display: flex;
+            gap: 12px;
+        }
+
+        .linha div {
+            flex: 1;
+            min-width: 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            background: #d31e87;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #a427ca;
+        }
+
+        .rodape {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #cf00c5;
+        }
+
+        a {
+            color: #c70af7;
+            text-decoration: none;
+        }
+
+        #mensagem {
+            margin-top: 15px;
+            font-size: 14px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .oculto {
+            display: none;
+        }
+
+        .aviso {
+            background: #f0f5fc;
+            color: #ec5cff;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Finalizar pagamento</h1>
+
+    <main class="pagamento">
+
+        <p class="descricao">
+            Escolha sua forma de pagamento.
+        </p>
+
+        <form id="formPagamento">
+
+            <div class="opcoes">
+
+                <label>
+                    <input type="radio" name="metodo"
+                        value="cartao" checked>
+                    Cartão de crédito ou débito
+                </label>
+
+                <label>
+                    <input type="radio" name="metodo"
+                        value="boleto">
+                    Boleto bancário
+                </label>
+
+                <label>
+                    <input type="radio" name="metodo"
+                        value="pix">
+                    Pix
+                </label>
+
+            </div>
+
+            <!-- CARTÃO -->
+
+            <div id="dadosCartao">
+
+                <div class="tipo-cartao">
+
+                    <label>
+                        <input type="radio" name="tipoCartao"
+                            value="credito" checked>
+                        Crédito
+                    </label>
+
+                    <label>
+                        <input type="radio" name="tipoCartao"
+                            value="debito">
+                        Débito
+                    </label>
+
+                </div>
+
+                <label for="numeroCartao">
+                    Número do cartão:
+                </label>
+
+                <input
+                    type="text"
+                    id="numeroCartao"
+                    placeholder="0000 0000 0000 0000"
+                    inputmode="numeric"
+                    maxlength="16"
+                    pattern="[0-9]{16}"
+                    autocomplete="off"
+                >
+
+                <label for="nomeCartao">
+                    Nome impresso no cartão:
+                </label>
+
+                <input
+                    type="text"
+                    id="nomeCartao"
+                    placeholder="NOME COMPLETO"
+                    maxlength="60"
+                    autocomplete="off"
+                >
+
+                <div class="linha">
+
+                    <div>
+                        <label for="validade">
+                            Validade:
+                        </label>
+
+                        <input
+                            type="text"
+                            id="validade"
+                            placeholder="MM/AA"
+                            maxlength="5"
+                            inputmode="numeric"
+                            autocomplete="off"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="cvv">
+                            CVV:
+                        </label>
+
+                        <input
+                            type="text"
+                            id="cvv"
+                            placeholder="000"
+                            maxlength="4"
+                            inputmode="numeric"
+                            autocomplete="off"
+                        >
+                    </div>
+
+                </div>
+
+                <div id="areaParcelas">
+
+                    <label for="parcelas">
+                        Número de parcelas:
+                    </label>
+
+                    <select id="parcelas">
+                        <option value="1">1x</option>
+                        <option value="2">2x</option>
+                        <option value="3">3x</option>
+                        <option value="4">4x</option>
+                        <option value="5">5x</option>
+                        <option value="6">6x</option>
+                        <option value="7">7x</option>
+                        <option value="8">8x</option>
+                        <option value="9">9x</option>
+                        <option value="10">10x</option>
+                        <option value="11">11x</option>
+                        <option value="12">12x</option>
+                    </select>
+
+                </div>
+
+                <div class="aviso">
+                    Página demonstrativa para atividade escolar.
+                    Não informe dados de cartões reais.
+                    Nenhum dado de cartão será armazenado.
+                </div>
+
+            </div>
+
+           
+<!-- BOLETO -->
+
+<div id="dadosBoleto" class="oculto">
+
+    <h3 style="text-align:center; color:#d31e87;">
+        Boleto Bancário
+    </h3>
+
+    <div class="boleto">
+
+        <h2>🏦 BANCO DEMONSTRATIVO</h2>
+
+        <hr>
+
+        <p><strong>Beneficiário:</strong> Minha Loja</p>
+
+        <p><strong>Pagador:</strong> Cliente</p>
+
+        <p><strong>Vencimento:</strong> 10/12/2026</p>
+
+        <p><strong>Valor:</strong> R$ 150,00</p>
+
+        <hr>
+
+        <p><strong>Linha digitável:</strong></p>
+
+        <p class="linha-digitavel">
+            00000.00000 00000.000000
+            00000.000000 0 00000000015000
+        </p>
+
+         <img
+            src="barcode.png"
+            alt="Código de Barras"
+            width="100%"
+            height="60"
+            style="display: block; margin: 15px auto; border-radius: 10px;">
+
+
+        <p style="text-align:center; font-size:12px;">
+            BOLETO DEMONSTRATIVO
+        </p>
+
+    </div>
+
+    <button type="button" onclick="window.print()">
+        Imprimir boleto
+    </button>
+
+    <div class="aviso">
+        Este boleto é fictício e não possui validade bancária.
+        Nenhum pagamento será realizado.
+    </div>
+
+</div>
+
+
+            <!-- PIX -->
+
+<div id="dadosPix" class="oculto">
+
+    <p style="text-align: center;">
+        Você escolheu pagamento via Pix!
+    </p>
+
+    <p style="text-align: center;">
+        Escaneie o QR Code abaixo:
+    </p>
+
+    <div style="text-align: center;">
+
+        <img
+            src="qr.png"
+            alt="QR Code Pix"
+            width="300"
+            height="300"
+            style="display: block; margin: 15px auto; border-radius: 10px;"
+        >
+
+        <p>
+            Abra o aplicativo do seu banco
+            e escaneie o código.
+        </p>
+
+    </div>
+
+    <div class="aviso">
+        Escaneie o QR Code para realizar o pagamento.
+    </div>
+
+</div>
+
+</div>
+
+            </div>
+
+            <button type="submit">
+                Confirmar pagamento
+            </button>
+
+            <div id="mensagem" role="status"></div>
+
+        </form>
+
+        <div class="rodape">
+            <a href="inicio.html">Voltar ao início</a>
+        </div>
+
+    </main>
+
+<script>
+
+    const formulario =
+        document.getElementById("formPagamento");
+
+    const dadosCartao =
+        document.getElementById("dadosCartao");
+
+    const dadosBoleto =
+        document.getElementById("dadosBoleto");
+
+    const dadosPix =
+        document.getElementById("dadosPix");
+
+    const areaParcelas =
+        document.getElementById("areaParcelas");
+
+    const mensagem =
+        document.getElementById("mensagem");
+
+    const numeroCartao =
+        document.getElementById("numeroCartao");
+
+    const nomeCartao =
+        document.getElementById("nomeCartao");
+
+    const validade =
+        document.getElementById("validade");
+
+    const cvv =
+        document.getElementById("cvv");
+
+    const parcelas =
+        document.getElementById("parcelas");
+
+
+    // Identifica a forma de pagamento.
+
+    function obterMetodo() {
+        return document.querySelector(
+            'input[name="metodo"]:checked'
+        ).value;
+    }
+
+
+    // Identifica crédito ou débito.
+
+    function obterTipoCartao() {
+        return document.querySelector(
+            'input[name="tipoCartao"]:checked'
+        ).value;
+    }
+
+
+    // Mostra os campos conforme a opção escolhida.
+
+    function atualizarPagamento() {
+
+        const metodo = obterMetodo();
+
+        dadosCartao.classList.toggle(
+            "oculto", metodo !== "cartao"
+        );
+
+        dadosBoleto.classList.toggle(
+            "oculto", metodo !== "boleto"
+        );
+
+        dadosPix.classList.toggle(
+            "oculto", metodo !== "pix"
+        );
+
+        atualizarParcelas();
+
+        // Os campos obrigatórios mudam conforme a opção.
+        const cartaoSelecionado = metodo === "cartao";
+
+        numeroCartao.required = cartaoSelecionado;
+        nomeCartao.required = cartaoSelecionado;
+        validade.required = cartaoSelecionado;
+        cvv.required = cartaoSelecionado;
+    }
+
+
+    // Parcelamento disponível somente no crédito.
+
+    function atualizarParcelas() {
+
+        const credito =
+            obterMetodo() === "cartao" &&
+            obterTipoCartao() === "credito";
+
+        areaParcelas.classList.toggle(
+            "oculto", !credito
+        );
+
+        parcelas.required = credito;
+    }
+
+
+    document.querySelectorAll(
+        'input[name="metodo"]'
+    ).forEach(function(opcao) {
+
+        opcao.addEventListener("change", function() {
+            atualizarPagamento();
+            mensagem.textContent = "";
+        });
+
+    });
+
+
+    document.querySelectorAll(
+        'input[name="tipoCartao"]'
+    ).forEach(function(opcao) {
+
+        opcao.addEventListener("change", function() {
+            atualizarParcelas();
+            mensagem.textContent = "";
+        });
+
+    });
+
+
+    // Permite somente números no cartão.
+
+    numeroCartao.addEventListener("input", function() {
+
+        this.value = this.value
+            .replace(/\D/g, "")
+            .slice(0, 16);
+
+    });
+
+
+    // Permite somente letras e espaços no nome.
+
+    nomeCartao.addEventListener("input", function() {
+
+        this.value = this.value.replace(
+            /[^A-Za-zÀ-ÿ\s]/g, ""
+        );
+
+    });
+
+
+    // Formato de validade MM/AA.
+
+    validade.addEventListener("input", function() {
+
+        let valor = this.value.replace(/\D/g, "");
+
+        valor = valor.slice(0, 4);
+
+        if (valor.length > 2) {
+            valor = valor.slice(0, 2) + "/" +
+                    valor.slice(2);
+        }
+
+        this.value = valor;
+
+    });
+
+
+    // CVV: somente números, máximo de quatro.
+
+    cvv.addEventListener("input", function() {
+
+        this.value = this.value
+            .replace(/\D/g, "")
+            .slice(0, 4);
+
+    });
+
+
+    function mostrarMensagem(texto, cor) {
+
+        mensagem.style.color = cor;
+        mensagem.textContent = texto;
+
+    }
+
+
+    // Verifica os dados do cartão.
+
+    function validarCartao() {
+
+        const numero = numeroCartao.value;
+        const nome = nomeCartao.value.trim();
+        const data = validade.value;
+        const codigo = cvv.value;
+
+        if (!/^[0-9]{16}$/.test(numero)) {
+
+            mostrarMensagem(
+                "O cartão deve possuir exatamente 16 números.",
+                "red"
+            );
+
+            return false;
+        }
+
+        if (!/^[A-Za-zÀ-ÿ]+(?:\s+[A-Za-zÀ-ÿ]+)+$/.test(nome)) {
+
+            mostrarMensagem(
+                "Digite o nome completo do cartão, usando somente letras.",
+                "red"
+            );
+
+            return false;
+        }
+
+        if (!/^(0[1-9]|1[0-2])\/[0-9]{2}$/.test(data)) {
+
+            mostrarMensagem(
+                "Digite uma validade no formato MM/AA.",
+                "red"
+            );
+
+            return false;
+        }
+
+        const partes = data.split("/");
+
+        const mes = Number(partes[0]);
+        const ano = 2000 + Number(partes[1]);
+
+        const hoje = new Date();
+
+        const anoAtual = hoje.getFullYear();
+        const mesAtual = hoje.getMonth() + 1;
+
+        if (
+            ano < anoAtual ||
+            (ano === anoAtual && mes < mesAtual)
+        ) {
+
+            mostrarMensagem(
+                "O cartão está com a validade vencida.",
+                "red"
+            );
+
+            return false;
+        }
+
+        if (!/^[0-9]{3,4}$/.test(codigo)) {
+
+            mostrarMensagem(
+                "O CVV deve possuir 3 ou 4 números.",
+                "red"
+            );
+
+            return false;
+        }
+
+        return true;
+
+    }
+
+
+    // Finalização demonstrativa.
+
+    formulario.addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        const metodo = obterMetodo();
+
+        if (metodo === "cartao") {
+
+            if (!validarCartao()) {
+                return;
+            }
+
+            const tipo = obterTipoCartao();
+
+            if (tipo === "credito") {
+
+                mostrarMensagem(
+                    "Pagamento demonstrativo com cartão de crédito em " +
+                    parcelas.value + "x. Nenhuma cobrança foi realizada.",
+                    "green"
+                );
+
+            } else {
+
+                mostrarMensagem(
+                    "Pagamento demonstrativo com cartão de débito. " +
+                    "Nenhuma cobrança foi realizada.",
+                    "green"
+                );
+
+            }
+
+        } else if (metodo === "boleto") {
+
+            mostrarMensagem(
+                "Boleto demonstrativo selecionado! " +
+                "Nenhum boleto bancário real foi gerado.",
+                "green"
+            );
+
+        } else if (metodo === "pix") {
+
+            mostrarMensagem(
+                "Pix demonstrativo selecionado! " +
+                "Nenhuma transferência foi realizada.",
+                "green"
+            );
+
+        }
+
+        // Limpa os campos após a demonstração.
+        formulario.reset();
+
+        atualizarPagamento();
+
+    });
+
+
+    atualizarPagamento();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Início - Meu Sistema</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #ff9bd5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .painel {
+            background: #ffe4f8;
+            max-width: 500px;
+            margin: 70px auto;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #bc46c0;
+        }
+
+        p {
+            color: #351c2a;
+            line-height: 1.6;
+        }
+
+        button {
+            background: #ff009d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #c9007b;
+        }
+    </style>
+</head>
+<body>
+
+    <main class="painel">
+        <p id="boasVindas">Carregando usuário...</p>
+
+        <button id="btnPagamento">
+            Ir para pagamento 💳
+        </button>
+        
+        <br><br>
+        
+        <button id="btnLogout">Sair da conta</button>
+
+        <p id="boasVindas">Carregando usuário...</p>
+
+        <button id="btnLogout">Sair da conta</button>
+    </main>
+       
+<script>
+const boasVindas = document.getElementById("boasVindas");
+const btnLogout = document.getElementById("btnLogout");
+
+function verificarSessao() {
+    const dadosSessao = localStorage.getItem("sessaoUsuario");
+
+    if (!dadosSessao) {
+        window.location.replace("index.html");
+        return;
+    }
+
+    try {
+        const sessao = JSON.parse(dadosSessao);
+
+        if (!sessao.nome || !sessao.email) {
+            throw new Error("Sessão inválida.");
+        }
+
+        // Confere se a conta ainda existe e corresponde à sessão.
+        if (sessao.email.toLowerCase() === "admin@teste.com") {
+            boasVindas.textContent =
+                "Olá, " + sessao.nome +
+                "! Você está conectado como administrador.";
+            return;
+        }
+
+        const dadosUsuarios = localStorage.getItem("usuarios");
+        const usuarios = dadosUsuarios
+            ? JSON.parse(dadosUsuarios)
+            : [];
+
+        const usuarioExiste = Array.isArray(usuarios) &&
+            usuarios.some(usuario =>
+                usuario.email &&
+                usuario.email.toLowerCase() ===
+                sessao.email.toLowerCase()
+            );
+
+        if (!usuarioExiste) {
+            localStorage.removeItem("sessaoUsuario");
+            window.location.replace("index.html");
+            return;
+        }
+
+        boasVindas.textContent =
+            "Olá, " + sessao.nome +
+            "! Você está conectado ao sistema.";
+
+    } catch (erro) {
+        localStorage.removeItem("sessaoUsuario");
+        window.location.replace("index.html");
+    }
+}
+
+verificarSessao();
+
+btnLogout.addEventListener("click", function() {
+    window.location.href = "logout.html";
+});
+
+document.getElementById("btnPagamento")
+    .addEventListener("click", function() {
+        window.location.href = "pagamento.html";
+    });
+    
+</script>
+</body>
+</html>

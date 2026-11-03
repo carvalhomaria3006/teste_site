@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Meu Sistema</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #ffa9e2;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #e26cd8;
+            margin-top: 40px;
+        }
+
+        .login {
+            background: rgb(255, 193, 252);
+            width: 320px;
+            max-width: 100%;
+            box-sizing: border-box;
+            margin: 25px auto;
+            padding: 25px;
+            border: 1px solid #cbd3df;
+            border-radius: 10px;
+        }
+
+        .descricao {
+            text-align: center;
+            color: #ff60dd;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            margin-bottom: 17px;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+        }
+
+        input:focus {
+            outline: 2px solid #56e6ff;
+        }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            background: #d31e87;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #a427ca;
+        }
+
+        .rodape {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #cf00c5;
+        }
+
+        .dica {
+            background: #f0f5fc;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #ec5cff;
+            overflow-wrap: anywhere;
+        }
+
+        a {
+            color: #c70af7;
+            text-decoration: none;
+        }
+
+        #mensagem {
+            margin-top: 15px;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Acessar sistema</h1>
+
+    <main class="login">
+        <p class="descricao">Digite seus dados para entrar.</p>
+
+        <form id="formLogin">
+            <label for="email">E-mail:</label>
+            <input
+                type="email"
+                id="email"
+                autocomplete="username"
+                placeholder="Digite seu e-mail"
+                required
+            >
+
+            <label for="senha">Senha:</label>
+            <input
+                type="password"
+                id="senha"
+                autocomplete="current-password"
+                placeholder="Digite sua senha"
+                minlength="8"
+                required
+            >
+
+            <button type="submit">Entrar</button>
+            <div id="mensagem" role="status"></div>
+        </form>
+
+        <div class="rodape">
+            Ainda não tem conta?
+            <a href="cadastro.html">Criar conta</a>
+        </div>
+    </main>
+
+  
+<script>
+    const formulario = document.getElementById("formLogin");
+    const mensagem = document.getElementById("mensagem");
+    
+    const contaPadrao = {
+        nome: "Administrador",
+        email: "admin@teste.com",
+        senha: "Sistema@123"
+    };
+    
+    const MAX_TENTATIVAS = 5;
+    const TEMPO_BLOQUEIO = 60 * 1000; // 1 minuto
+    
+    function chaveTentativas(email) {
+        return "controleLogin_" + email;
+    }
+    
+    function lerTentativas(email) {
+        const dados = localStorage.getItem(chaveTentativas(email));
+    
+        if (!dados) {
+            return { tentativas: 0, bloqueadoAte: 0 };
+        }
+    
+        try {
+            const controle = JSON.parse(dados);
+    
+            return {
+                tentativas: Number(controle.tentativas) || 0,
+                bloqueadoAte: Number(controle.bloqueadoAte) || 0
+            };
+        } catch (erro) {
+            return { tentativas: 0, bloqueadoAte: 0 };
+        }
+    }
+    
+    function mostrarMensagem(texto, cor) {
+        mensagem.style.color = cor;
+        mensagem.textContent = texto;
+    }
+    
+    formulario.addEventListener("submit", function(event) {
+        event.preventDefault();
+    
+        const email = document.getElementById("email")
+            .value.trim().toLowerCase();
+        const senha = document.getElementById("senha").value;
+    
+        if (senha.length < 8) {
+            mostrarMensagem(
+                "A senha deve ter pelo menos 8 caracteres.", "red"
+            );
+            return;
+        }
+    
+        let controle;
+    
+        try {
+            controle = lerTentativas(email);
+        } catch (erro) {
+            mostrarMensagem(
+                "Não foi possível verificar o bloqueio.", "red"
+            );
+            return;
+        }
+    
+        const agora = Date.now();
+    
+        // Verifica se o bloqueio ainda está ativo.
+        if (controle.bloqueadoAte > agora) {
+            const segundos = Math.ceil(
+                (controle.bloqueadoAte - agora) / 1000
+            );
+    
+            mostrarMensagem(
+                "Muitas tentativas incorretas. Tente novamente em " +
+                segundos + " segundo(s).",
+                "red"
+            );
+            return;
+        }
+    
+        // Quando o tempo termina, libera novas tentativas.
+        if (
+            controle.bloqueadoAte !== 0 &&
+            controle.bloqueadoAte <= agora
+        ) {
+            controle = { tentativas: 0, bloqueadoAte: 0 };
+    
+            try {
+                localStorage.setItem(
+                    chaveTentativas(email),
+                    JSON.stringify(controle)
+                );
+            } catch (erro) {
+                mostrarMensagem(
+                    "Não foi possível atualizar o controle de login.",
+                    "red"
+                );
+                return;
+            }
+        }
+    
+        let usuarios;
+    
+        try {
+            const dados = localStorage.getItem("usuarios");
+            usuarios = dados ? JSON.parse(dados) : [];
+    
+            if (!Array.isArray(usuarios)) {
+                throw new Error("Lista de usuários inválida.");
+            }
+    
+            // Compatibilidade com o cadastro da versão antiga.
+            const usuarioAntigo = localStorage.getItem("usuario");
+    
+            if (usuarioAntigo) {
+                const antigo = JSON.parse(usuarioAntigo);
+    
+                if (
+                    antigo.email &&
+                    !usuarios.some(
+                        u => u.email &&
+                        u.email.toLowerCase() ===
+                        antigo.email.toLowerCase()
+                    )
+                ) {
+                    usuarios.push(antigo);
+                }
+            }
+        } catch (erro) {
+            mostrarMensagem(
+                "Não foi possível ler os cadastros salvos.", "red"
+            );
+            return;
+        }
+    
+        let usuario = null;
+    
+        // Verifica a conta padrão do administrador.
+        if (
+            email === contaPadrao.email &&
+            senha === contaPadrao.senha
+        ) {
+            usuario = contaPadrao;
+        } else {
+            // Procura o usuário cadastrado pelo e-mail.
+            const cadastrado = usuarios.find(
+                u => u.email &&
+                u.email.trim().toLowerCase() === email
+            );
+    
+            if (cadastrado && cadastrado.senha === senha) {
+                usuario = cadastrado;
+            }
+        }
+    
+        if (!usuario) {
+            controle.tentativas++;
+    
+            if (controle.tentativas >= MAX_TENTATIVAS) {
+                controle.bloqueadoAte = Date.now() + TEMPO_BLOQUEIO;
+                controle.tentativas = 0;
+    
+                try {
+                    localStorage.setItem(
+                        chaveTentativas(email),
+                        JSON.stringify(controle)
+                    );
+                } catch (erro) {
+                    mostrarMensagem(
+                        "Erro ao salvar o bloqueio temporário.", "red"
+                    );
+                    return;
+                }
+    
+                mostrarMensagem(
+                    "Você errou 5 vezes. Login bloqueado por 1 minuto.",
+                    "red"
+                );
+                return;
+            }
+    
+            try {
+                localStorage.setItem(
+                    chaveTentativas(email),
+                    JSON.stringify(controle)
+                );
+            } catch (erro) {
+                mostrarMensagem(
+                    "Não foi possível registrar a tentativa.", "red"
+                );
+                return;
+            }
+    
+            const restantes = MAX_TENTATIVAS - controle.tentativas;
+    
+            mostrarMensagem(
+                "E-mail ou senha incorretos. Restam " +
+                restantes + " tentativa(s).",
+                "red"
+            );
+            return;
+        }
+    
+        // Login correto: limpa as tentativas anteriores.
+        try {
+            localStorage.removeItem(chaveTentativas(email));
+    
+            // Não armazena a senha na sessão.
+            const sessao = {
+                nome: usuario.nome,
+                email: usuario.email,
+                idade: usuario.idade ?? null,
+                autenticadoEm: Date.now()
+            };
+    
+            localStorage.setItem(
+                "sessaoUsuario",
+                JSON.stringify(sessao)
+            );
+        } catch (erro) {
+            mostrarMensagem(
+                "Não foi possível iniciar a sessão.", "red"
+            );
+            return;
+        }
+    
+        mostrarMensagem(
+            "Login realizado! Bem-vindo, " + usuario.nome + "!",
+            "green"
+        );
+    
+        formulario.reset();
+    
+        setTimeout(function() {
+            window.location.href = "inicio.html";
+        }, 800);
+    });
+    </script>
+</body>
+</html>
